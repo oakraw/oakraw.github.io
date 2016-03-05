@@ -20,7 +20,6 @@ app.controller('AdminController', function($scope, $http, $mdSidenav) {
   //         .accentPalette('red');
 
   $scope.menu = menu;
-  $scope.selectedPage = 0;
   $scope.toggleList = function() {
     $mdSidenav('left').toggle();
   }
