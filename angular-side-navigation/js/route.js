@@ -17,6 +17,10 @@ route_module.config(function($stateProvider, $urlRouterProvider){
         });
 });
 
+route_module.config(function($locationProvider) {
+  $locationProvider.html5Mode(true);
+});
+
 route_module.run( ['$rootScope', '$state', '$stateParams',
   function ($rootScope,   $state,   $stateParams) {
       $rootScope.$state = $state;
