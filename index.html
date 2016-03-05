@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="style/app.min.css"/>
+    <link rel="stylesheet" href="style/icon.css"/>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.17/angular-ui-router.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/route.js"></script>
+
+  </head>
+  <body ng-app="admin" layout="row" ng-controller="AdminController" ng-cloak>
+
+    <md-sidenav class="site-sidenav md-sidenav-left md-whiteframe-z2" md-component-id="left" ng-click="toggleList()" aria-label="Show User List" md-is-locked-open="$mdMedia('gt-sm')">
+
+      <md-toolbar class="md-whiteframe-z1">
+        <h3>Admin</h3>
+      </md-toolbar>
+
+      <md-list>
+        <md-list-item ng-repeat="list in menu" ui-sref="{{list.path}}"  ng-class="{'selected' : $state.current.name == list.path }">
+            <!-- <md-icon md-font-icon="{{'icon-'+list.icon}}" class="icon"></md-icon> -->
+            <span class="menu-list">{{list.title}}</span>
+        </md-list-item>
+      </md-list>
+
+    </md-sidenav>
+
+    <div flex layout="column" tabIndex="-1" role="main" class="md-whiteframe-z2">
+
+      <md-toolbar layout="row" hide-gt-sm class="md-whiteframe-z1" layout="row" layout-align="start center">
+        <md-button id="menu-btn" class="md-icon-button md-button md-ink-ripple" ng-click="toggleList()" aria-label="Show User List">
+          <md-icon md-font-icon="icon-menu"></md-icon>
+        </md-button>
+        <h3 class="capitalize" style="margin-left:0;">{{$state.current.name}}</h3>
+      </md-toolbar>
+
+      <md-content flex id="content" ui-view>
+        <!-- content -->
+      </md-content>
+
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,13 @@
+
+.icon-edit:before {
+  content: "\e3c9";
+}
+.icon-delete:before {
+  content: "\e872";
+}
+.icon-add:before {
+  content: "\e145";
+}
+.icon-menu:before {
+  content: "\e5d2";
+}
