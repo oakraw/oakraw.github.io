@@ -40,6 +40,7 @@
   </form>
   
   <!-- Code to handle taking the snapshot and displaying it locally -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
   <script language="JavaScript">
     function take_snapshot() {
       // take snapshot and get image data
@@ -50,6 +51,17 @@
           '<img src="'+data_uri+'"/>';
       } );
     }
+
+    function isGetUserMediaEnable() {
+      // Since sometimes there's API support but stuff doesn't actually work, make a usage test.
+      // Add a fake image file input to memory.
+      var input = $('<input type="file" accept="image/*" capture="camera">');
+
+      // Test if input is enabled.
+      return input.is(':enabled'); // `true` if device actually supports getUserMedia API.
+    }
+
+        console.log(isGetUserMediaEnable());
   </script>
   
 </body>
