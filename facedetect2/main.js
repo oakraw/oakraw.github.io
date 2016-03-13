@@ -21,20 +21,8 @@
           var reader = new FileReader();
 
           reader.onload = function(e) {
-            // image.onload = function(evt) {
-            //     var width = this.width;
-            //     var height = this.height;
-            //     console.log("x "+ width+" "+height);
-            // };
-            // image.src = e.target.result;
-
             ctx = canvas.getContext('2d');
-            // Create a new image.
-            // Set the img src property using the data URL.
-            //image.style.display = "block";
-
             image.src = reader.result;
-            //image.style.width = "50vw";
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             canvas.width = image.width * scale;
             canvas.height = image.height * scale;
@@ -82,40 +70,11 @@
   }
 
   function faceRecognize(ctx) {
-
-    console.log("face detecting");
-    var tracker = new tracking.ObjectTracker('face');
-    tracker.setInitialScale(4);
-    tracker.setStepSize(1.7);
-    tracker.setEdgesDensity(0.05);
-
-    tracking.track('#img', tracker);
-    tracker.on('track', function(event) {
-      //ctx.clearRect(0, 0, canvas.width, canvas.height);
-      console.log(event);
-      Caman('#canvas', function() {
-        this.reloadCanvasData();
-        this.brightness(-1);
-        this.contrast(20);
-        this.saturation(10);
-        this.render(function() {
-          event.data.forEach(function(rect) {
-            var mask_img = new Image();
-            mask_img.src = "asset/oil1.png";
-            mask_img.onload = function() {
-              ctx.drawImage(mask_img, rect.x, rect.y, rect.width, rect.height);
-              ctx.strokeStyle = '#a64ceb';
-              ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
-              ctx.font = '11px Helvetica';
-              ctx.fillStyle = "#fff";
-              ctx.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
-              ctx.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
-            };
-          });
-        });
-      });
-
-    });
+    var ctracker = new clm.tracker();
+    ctracker.init(pModel);
+    var positions = ctracker.getCurrentPosition();
+    ctracker.start(canvas);
+    console.log(positions);
   }
 
   function openCamera() {

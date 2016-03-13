@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+    <script src="https://raw.githubusercontent.com/auduno/clmtrackr/dev/clmtrackr.js"></script>
+    <script src="model_pca_20_svm.js"></script>
+  </head>
+  <body>
+    <video id="video" style="display: none;"></video>
+    <img id="img" style="display: none;">
+    <canvas  style="display: none;" id="canvas"></canvas>
+    <div>
+      <button name="capture" onclick="openCamera()">Capture</button>
+      <button type="button" name="load" onclick="chooseFile()">Load image</button>
+      <div style="height:0px;overflow:hidden">
+         <input type="file" id="fileInput" name="fileInput" accept="image/x-png, image/jpeg"/>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="main.js"></script>
+  </body>
+</html>
