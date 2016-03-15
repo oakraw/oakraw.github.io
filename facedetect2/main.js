@@ -7,28 +7,26 @@ var overlayCC = overlay.getContext('2d');
 var converg = false;
 
 
-$("document").ready(function(){
-  $("#canvas").click(function(e){
-     var parentOffset = $(this).parent().offset(); 
-     //or $(this).offset(); if you really just want the current element's offset
-     var relX = e.pageX - parentOffset.left;
-     var relY = e.pageY - parentOffset.top;
-     console.log(relX+" "+relY);
+$("document").ready(function() {
+  $("#canvas").click(function(e) {
+    var parentOffset = $(this).parent().offset();
+    //or $(this).offset(); if you really just want the current element's offset
+    var relX = e.pageX - parentOffset.left;
+    var relY = e.pageY - parentOffset.top;
+    console.log(relX + " " + relY);
   });
 });
 
 var img = new Image();
 img.onload = function() {
-  cc.drawImage(img,0,0,625, 500);
+  cc.drawImage(img, 0, 0, 625, 500);
 };
 
-var ctrack = new clm.tracker({stopOnConvergence : true});
+var ctrack = new clm.tracker({
+  stopOnConvergence: true
+});
 ctrack.init(pModel);
 
- stats = new Stats();
-// stats.domElement.style.position = 'absolute';
-// stats.domElement.style.top = '0px';
-// document.getElementById('container').appendChild( stats.domElement );
 
 var drawRequest;
 
@@ -62,83 +60,78 @@ document.addEventListener("clmtrackrLost", function(event) {
 
 
 document.addEventListener("clmtrackrConverged", function(event) {
-					cancelRequestAnimFrame(drawRequest);
-          console.log("Converged"+converg);
-          if(!converg) {
-            overlay.style.display = "none";
-            Caman('#image', function() {
-              this.reloadCanvasData();
-              this.exposure(-5);
-              this.contrast(5);
-              this.saturation(15);
-              this.render(function() {
-                maskMapping(0,14,33,7);
-                eyeMapping(23, 25, "oil3_left_eye.png");
-                eyeMapping(30, 28, "oil3_right_eye.png");
-              });
+  cancelRequestAnimFrame(drawRequest);
+  console.log("Converged" + converg);
+  if (!converg) {
+    overlay.style.display = "none";
+    Caman('#image', function() {
+      this.reloadCanvasData();
+      this.exposure(-5);
+      this.contrast(5);
+      this.saturation(15);
+      this.render(function() {
+        maskMapping(0, 14, 33, 7, function(){
+          noseMapping(33, 62, 0.02, "oil3_left_eye.png");
+          noseMapping(53, 7, 0.3, "oil3_left_eye.png");
+          eyeMapping(23, 25, "oil3_left_eye.png");
+          eyeMapping(30, 28, "oil3_right_eye.png");
+          setTimeout(function(){
+            // $('img[alt="before"]').attr("src", originalCanvas.toDataURL("image/jpeg", 1.0));
+            // $('img[alt="after"]').attr("src", canvas.toDataURL("image/jpeg", 1.0));
+            //
+            // $('img[alt="before"]').attr("width", originalCanvas.width);
+            // $('img[alt="before"]').attr("height", originalCanvas.height);
+            //
+            // $('img[alt="after"]').attr("width", canvas.width);
+            // $('img[alt="after"]').attr("height", canvas.height);
+            //
+            // $("#previewContainer").attr("width", canvas.width);
+            // $("#previewContainer").attr("height", canvas.height);
+            var beforeAfterPanel =
+              '<div><img alt="before" src="'+originalCanvas.toDataURL("image/jpeg", 1.0)+'" width="'+originalCanvas.width+'" height="'+originalCanvas.height+'"/></div>'+
+              '<div><img alt="before" src="'+canvas.toDataURL("image/jpeg", 1.0)+'" width="'+canvas.width+'" height="'+canvas.height+'"/></div>';
+
+            console.log(beforeAfterPanel);
+            $("#previewContainer").append(beforeAfterPanel);
+
+            $('#previewContainer').beforeAfter({
+              showFullLinks: false
             });
 
-            Caman('#original_image', function() {
-              this.reloadCanvasData();
-              this.exposure(15);
-              this.contrast(3);
-              this.saturation(-5); 
-              this.vibrance(10); 
-              this.render();  
-            });
+            $("#previewContainer").css("display","block");
 
-            
-          }
-          converg = true;
-				}, false);
+            // $("#before").attr("crossOrigin", 'anonymous');
+            //$("#after").attr("src", canvas.toDataURL());
+            //$("#after").attr("crossOrigin", 'anonymous');
+          }, 1000);
+        });
+
+
+      });
+    });
+
+    Caman('#original_image', function() {
+      this.reloadCanvasData();
+      this.exposure(15);
+      this.contrast(3);
+      this.saturation(-5);
+      this.vibrance(10);
+      this.render();
+    });
+
+
+  }
+  converg = true;
+}, false);
 
 // update stats on iteration
 document.addEventListener("clmtrackrIteration", function(event) {
-  stats.update();
+  //stats.update();
 }, false);
-
-function maskMapping(positionA, positionB, positionC, positionD){
-  console.log("maskMapping");
-  var img = new Image();
-  img.onload = function(){
-    var py = new Pythagoras(coor[positionA], coor[positionB]);
-    var width = py.getDistanceBetween2Coor();
-    var startHeightPoint = py.getCenterPointBetween2Coor();
-
-    var pyh = new Pythagoras(coor[positionC], coor[positionD]);
-    var height = pyh.getDistanceBetween2Coor();
-
-    cc.setTransform(1, 0, 0, 1, 0, 0);
-    cc.translate(coor[positionA][0], coor[positionA][1]);
-    cc.rotate(py.getDegreeFromX());
-    cc.translate(-coor[positionA][0], -coor[positionA][1]);
-    cc.drawImage(img, coor[positionA][0], coor[positionA][1], width , height);
-
-  };
-
-  img.src = "oil1.png";
-}
-
-function eyeMapping(positionA, positionB, mask_src){
-  var img = new Image();
-  img.onload = function(){
-    var py = new Pythagoras(coor[positionA], coor[positionB]);
-    var width = py.getDistanceBetween2Coor();
-    
-    cc.setTransform(1, 0, 0, 1, 0, 0);
-    cc.translate(coor[positionA][0], coor[positionA][1]);
-    cc.rotate(py.getDegreeFromX());
-    cc.translate(-coor[positionA][0], -coor[positionA][1]);
-    cc.drawImage(img, coor[positionA][0], coor[positionA][1], width , width);
-
-  };
-
-  img.src = mask_src;
-}
 
 
 // function to start showing images
-function loadImage() {
+function loadImageToCanvas() {
   if (fileList.indexOf(fileIndex) < 0) {
     var reader = new FileReader();
     reader.onload = (function(theFile) {
@@ -146,43 +139,23 @@ function loadImage() {
         // check if positions already exist in storage
 
         // Render thumbnail.
-        
+
         var cc = canvas.getContext('2d');
         var img = new Image();
         img.onload = function() {
           converg = false;
 
           if (img.height > 500 || img.width > 700) {
-            var rel = img.height/img.width;
+            var rel = img.height / img.width;
             var neww = 700;
-            var newh = neww*rel;
+            var newh = neww * rel;
             if (newh > 500) {
               newh = 500;
-              neww = newh/rel;
+              neww = newh / rel;
             }
-            canvas.setAttribute('width', neww);
-            canvas.setAttribute('height', newh);
-
-            overlay.setAttribute('width', neww);
-            overlay.setAttribute('height', newh);
-
-            original_image.setAttribute('width', neww);
-            original_image.setAttribute('height', newh);
-
-            oriCtx.drawImage(img,0,0,neww, newh);
-            cc.drawImage(img,0,0,neww, newh);
+            drawImageToCanvasWrapper(img, neww, newh, rotateImage);
           } else {
-            canvas.setAttribute('width', img.width);
-            canvas.setAttribute('height', img.height);
-
-            overlay.setAttribute('width', img.width);
-            overlay.setAttribute('height', img.height);
-
-            original_image.setAttribute('width', img.width);
-            original_image.setAttribute('height', img.height);
-
-            oriCtx.drawImage(img,0,0,img.width, img.height);
-            cc.drawImage(img,0,0,img.width, img.height);
+            drawImageToCanvasWrapper(img, img.width, img.height, rotateImage);
           }
 
           animateClean();
@@ -197,13 +170,18 @@ function loadImage() {
 
 }
 
+
+
 // set up file selector and variables to hold selections
-var fileList, fileIndex;
+var fileList, fileIndex, rotateImage;
 if (window.File && window.FileReader && window.FileList) {
   function handleFileSelect(evt) {
-    var files = evt.target.files;
+    console.log(evt);
+    rotateImage = null;
+
+    files = evt.target.files;
     fileList = [];
-    for (var i = 0;i < files.length;i++) {
+    for (var i = 0; i < files.length; i++) {
       if (!files[i].type.match('image.*')) {
         continue;
       }
@@ -213,12 +191,30 @@ if (window.File && window.FileReader && window.FileList) {
       fileIndex = 0;
     }
 
-    loadImage();
+    loadImage.parseMetaData(
+      files[0],
+      function(data) {
+        if (!data.imageHead) {
+            return;
+        }
+        if(data.exif){
+          console.log(data.exif);
+          var orientation = data.exif.get('Orientation');
+          if(orientation == 6){
+            rotateImage = "Left";
+          }else if (orientation == 8) {
+            rotateImage = "Right";
+          }
+        }
+      }, {
+        disableImageHead: false
+      }
+    );
+
+    loadImageToCanvas();
   }
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
 } else {
   $('#files').addClass("hide");
   $('#loadimagetext').addClass("hide");
 }
-
-
