@@ -176,7 +176,7 @@ function loadImageToCanvas() {
 var fileList, fileIndex, rotateImage;
 if (window.File && window.FileReader && window.FileList) {
   function handleFileSelect(evt) {
-    console.log(evt);
+    $("#previewContainer").html("");
     rotateImage = null;
 
     files = evt.target.files;
