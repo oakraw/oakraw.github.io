@@ -1,76 +1,118 @@
 <!doctype html>
-
 <html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>WebcamJS Test Page</title>
-  <style type="text/css">
-    body { font-family: Helvetica, sans-serif; }
-    h2, h3 { margin-top:0; }
-    form { margin-top: 15px; }
-    form > input { margin-right: 15px; }
-    #results { float:right; margin:20px; padding:20px; border:1px solid; background:#ccc; }
-  </style>
-</head>
-<body>
-  <div id="results">Your captured image will appear here...</div>
-  
-  <h1>WebcamJS Test Page</h1>
-  <h3>Demonstrates simple 320x240 capture &amp; display</h3>
-  
-  <div id="my_camera"></div>
-  
-  <!-- First, include the Webcam.js JavaScript Library -->
-  <script type="text/javascript" src="js/webcam.min.js"></script>
-  
-  <!-- Configure a few settings and attach camera -->
-  <script language="JavaScript">
-  
-    Webcam.set({
-      width: 320,
-      height: 240,
-      image_format: 'jpeg',
-      jpeg_quality: 90
-    });
+	<head>
+		<title>Face Tracker</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style>
+			@import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
 
-    if (location.protocol === 'http:') {
-        Webcam.set({
-          force_flash: true,
-        });
-      }
+			body {
+				font-family: 'Lato';
+				background-color: #f0f0f0;
+				margin: 0px auto;
+				max-width: 1150px;
+			}
 
-    Webcam.attach( '#my_camera' );
-  </script>
-  
-  <!-- A button for taking snaps -->
-  <form>
-    <input type=button value="Take Snapshot" onClick="take_snapshot()">
-  </form>
-  
-  <!-- Code to handle taking the snapshot and displaying it locally -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
-  <script language="JavaScript">
-    function take_snapshot() {
-      // take snapshot and get image data
-      Webcam.snap( function(data_uri) {
-        // display results in page
-        document.getElementById('results').innerHTML = 
-          '<h2>Here is your image:</h2>' + 
-          '<img src="'+data_uri+'"/>';
-      } );
-    }
+			#overlay {
+				position: absolute;
+				top: 0px;
+				left: 0px;
+			}
 
-    function isGetUserMediaEnable() {
-      // Since sometimes there's API support but stuff doesn't actually work, make a usage test.
-      // Add a fake image file input to memory.
-      var input = $('<input type="file" accept="image/*" capture="camera">');
+			#container {
+				position : relative;
+				width : 700px;
+				height : 500px;
+				/*margin : 0px auto;*/
+			}
 
-      // Test if input is enabled.
-      return input.is(':enabled'); // `true` if device actually supports getUserMedia API.
-    }
+			#content {
+				margin-top : 70px;
+				margin-left : 100px;
+				margin-right : 100px;
+				max-width: 950px;
+			}
 
-        console.log(isGetUserMediaEnable());
-  </script>
-  
-</body>
+			#sketch {
+				display: none;
+			}
+
+			#filter {
+				display: none;
+			}
+
+			#convergence {
+				display : inline;
+			}
+
+			h2 {
+				font-weight : 400;
+			}
+
+			.btn {
+				font-family: 'Lato';
+				font-size: 16px;
+			}
+
+			.hide {
+				display : none;
+			}
+			#content>canvas {
+			    float: left;
+			}
+			canvas {
+			  border: 1px solid #000;
+			}
+		</style>
+		<script type="text/javascript">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-32642923-1']);
+			_gaq.push(['_trackPageview']);
+
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
+	</head>
+	<body>
+		<script src="./js/utils.js"></script>
+		<script src="./js/dat.gui.min.js"></script>
+		<script src="./js/numeric-1.2.6.min.js"></script>
+		<script src="./js/mosse.js"></script>
+		<script src="./js/jsfeat-min.js"></script>
+		<script src="./js/frontalface.js"></script>
+		<script src="./js/jsfeat_detect.js"></script>
+		<script src="./js/left_eye_filter.js"></script>
+		<script src="./js/right_eye_filter.js"></script>
+		<script src="./js/nose_filter.js"></script>
+		<script src="./models/model_pca_20_mosse.js"></script>
+		<script src="./js/clm.js"></script>
+		<script src="./js/svmfilter_webgl.js"></script>
+		<script src="./js/svmfilter_fft.js"></script>
+		<script src="./js/mossefilter.js"></script>
+		<script src="./js/Stats.js"></script>
+
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/jquery.imgareaselect.pack.js"></script>
+		<script src="./js/BlobBuilder.min.js"></script>
+		<script src="./js/Filesaver.min.js"></script>
+		<script type="text/javascript" src="bower_components/caman/dist/caman.full.min.js"></script>
+
+
+		<div id="content">
+			<canvas style="display:none;" id="original_image" width="625" height="500"></canvas>
+			<div id="container">
+				<canvas id="image" width="625" height="500"></canvas>
+				<canvas id="overlay" width="625" height="500"></canvas>
+			</div>
+			<br/>
+			<input type="file" class="btn" id="files" name="files[]" />
+
+			<script src="util.js"></script>
+			<script src="main.js"></script>
+		</div>
+	</body>
 </html>
