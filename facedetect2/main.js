@@ -91,12 +91,14 @@ document.addEventListener("clmtrackrConverged", function(event) {
               '<div><img alt="before" src="'+originalCanvas.toDataURL("image/jpeg", 1.0)+'" width="'+originalCanvas.width+'" height="'+originalCanvas.height+'"/></div>'+
               '<div><img alt="before" src="'+canvas.toDataURL("image/jpeg", 1.0)+'" width="'+canvas.width+'" height="'+canvas.height+'"/></div>';
 
-            console.log(beforeAfterPanel);
+              console.log(originalCanvas.toDataURL("image/jpeg", 1.0));
+
             $("#previewContainer").append(beforeAfterPanel);
 
             $('#previewContainer').beforeAfter({
               showFullLinks: false
             });
+            $('#previewContainer').draggable();
 
             $("#previewContainer").css("display","block");
 
